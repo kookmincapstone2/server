@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from werkzeug.exceptions import *
 
+from api.authorization import app as api_authorization
 from api.server import app as api_server
 from api.test import app as api_test
 from settings.logger import after_request, error_handler
@@ -20,6 +21,7 @@ def create_wsgi():
     # app connections
     app.register_blueprint(api_server)
     app.register_blueprint(api_test)
+    app.register_blueprint(api_authorization)
 
     CORS(app)
     return app
