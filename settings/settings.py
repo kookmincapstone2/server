@@ -13,7 +13,7 @@ MODE = os.environ.get('MODE')
 USER = 'postgres'  # username
 PASSWOLRD = 'root'  # postgresql pw
 DB_PORT = '5432'  # postgresql port
-NAME = 'flask_basic'  # db name
+NAME = 'capstone2'  # db name
 DB_URI = f'postgresql://{USER}:{PASSWOLRD}@{HOST_ADDR}:{DB_PORT}/'  # postgresql uri
 
 # select operation mode
