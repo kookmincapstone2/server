@@ -21,6 +21,7 @@ if MODE == 'TEST' or sys.argv[0].endswith('test'):  # use only pytest
     HOST_ADDR = '127.0.0.1'
     DEBUG = False
     NAME += '_test'
+    DB_URI += NAME
 elif MODE == 'DEV':  # mode - development
     HOST_ADDR = '127.0.0.1'
     DEBUG = True
