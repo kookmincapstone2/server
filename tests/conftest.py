@@ -1,6 +1,7 @@
 from pytest import fixture
 from sqlalchemy import create_engine
 
+from api.models.room import Room, RoomMember
 from api.models.user import User
 from db import Base, Database
 from settings.settings import DB_URI, NAME, PASSWOLRD, DB_PORT, HOST_ADDR
@@ -34,18 +35,48 @@ def init_database(database):
     Base.metadata.create_all(engine)
 
 
-@fixture(scope='session')
+ID_NUM = 1234
+
+
+@fixture()
 def user():
+    global ID_NUM
+    ID_NUM = ID_NUM + 1
     with Database() as db:
-        user = User(email='master@master.master',
-                    pw='master123!@#',
-                    name='master',
-                    student_id=1,
-                    phone='01000000000')
+        new_user = User(
+            email=f'master{ID_NUM}@master.master',
+            pw='master123!@#',
+            name=f'master{ID_NUM}',
+            student_id=ID_NUM,
+            phone=f'0100000{ID_NUM}'
+        )
 
-        db.add(user)
+        db.add(new_user)
         db.commit()
-        db.refresh(user)
-        db.expunge(user)
+        db.refresh(new_user)
+        db.expunge(new_user)
 
-        return user
+        new_room = Room(
+            master_id=new_user.id,
+            title=f'test_title{ID_NUM}',
+        )
+
+        db.add(new_room)
+        db.commit()
+        db.refresh(new_room)
+        db.expunge(new_room)
+
+        new_room_member = RoomMember(
+            room_id=new_room.id,
+            member_id=new_user.id,
+        )
+
+        db.add(new_room_member)
+        db.commit()
+        db.refresh(new_room_member)
+        db.expunge(new_room_member)
+
+        new_room.room_member.append(new_room_member)
+        new_user.room.append(new_room)
+
+        return new_user
