@@ -69,7 +69,7 @@ def put_room_management(data, db):  # 방 정보 수정
         if i not in data:
             raise BadRequest
 
-    user = db.query(User).filter(User.id == data['user_id'])  # 유저 객체 가져옴
+    user = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체 가져옴
 
     if not user:  # 해당 유저가 존재하지 않음
         raise Conflict
