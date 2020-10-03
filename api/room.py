@@ -22,7 +22,7 @@ def post_room_management(data, db):  # 방 생성
     if not master:  # 해당 유저가 존재 하지 않음
         raise Conflict
 
-    new_room = Room(master=master,  # 새로운 방 생성
+    new_room = Room(master_id=master.id,  # 새로운 방 생성
                     title=data['title'])
 
     if 'maximum_population' in data:  # 최대 인원을 제한했다면 정보 넣어줌
@@ -32,12 +32,12 @@ def post_room_management(data, db):  # 방 생성
     db.commit()
 
     new_room_member = RoomMember(room=new_room,  # 룸 멤버로 마스터를 생성함
-                                 member=master)
+                                 member_id=master.id)
 
     db.add(new_room_member)
     db.commit()
 
-    return jsonify({serialize(new_room)})
+    return jsonify(serialize(new_room))
 
 
 @app.route('/room/management', methods=['GET'])
