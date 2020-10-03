@@ -103,7 +103,7 @@ def delete_room_management(data, db):
     if not room:  # 해당 방이 존재하지 않음
         raise Conflict
 
-    if not room.master_id == data['user_id']:  # 해당 유저가 마스터가 아니어서 권한이 없음
+    if not str(room.master_id) == data['user_id']:  # 해당 유저가 마스터가 아니어서 권한이 없음
         raise Forbidden
 
     db.delete(room)
