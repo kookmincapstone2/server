@@ -48,12 +48,12 @@ def get_room_management(data, db):  # 가입된 방을 검색함
         if i not in data:
             raise BadRequest
 
-    user = db.query(User).filter(User.id == data['user_id'])  # 유저 객체 가져옴
+    user = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체 가져옴
 
     if not user:  # 해당 유저가 존재하지 않음
         raise Conflict
 
-    room_members = db.query(RoomMember).filter(RoomMember.member == user).all()  # 유저가 가입된 방을 모두 가져옴
+    room_members = db.query(RoomMember).filter(RoomMember.member_id == user.id).all()  # 유저가 가입된 방을 모두 가져옴
 
     if not room_members:  # 가입된 방이 없음
         raise NotFound
