@@ -127,3 +127,102 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 400 요청 형식 맞지 않음
 404 존재하지 않는 계정
 ```
+
+### room
+[POST] /api/room/management  
+방 생성
+
+요청
+```
+{
+    "user_id": 1,
+    "title": "test_room_title",
+    ("maximum_population": 60)
+}
+```
+
+응답
+```
+{
+    "room_id": 1,
+    "master_id": 1,
+    "title": "test_room_title",
+    "maximum_population": 60,
+}
+
+200 ok
+400 요청 형식 맞지 않음
+404 해당 유저 존재하지 않음
+```
+
+[GET] /api/room/management  
+가입된 방 조회
+
+요청
+```
+{
+    "user_id": 1
+}
+```
+
+응답
+```
+{
+    "RoomMember": [
+        "room_id": 1,
+    ]
+}
+
+200 ok
+400 요청 형식 맞지 않음
+404 해당 유저 존재하지 않음 or 가입된 방이 없음
+```
+
+[PUT] /api/room/management  
+자신이 생성한 방 수정
+
+요청
+```
+{
+    "user_id": 1,
+    "room_id": 1,
+    "title": "modified_title",
+    "maximum_population": "50"
+}
+```
+
+응답
+```
+{
+    "room_id": 1,
+    "master_id": 1,
+    "title": "modified_title",
+    "maximum_population": 50,
+}
+
+200 ok
+400 요청 형식 맞지 않음
+403 해당 유저가 해당 방의 마스가 아님
+404 해당 유저 존재하지 않음 or 해당 방 존재하지 않음
+```
+
+[DELETE] /api/room/management  
+자신이 생선한 방 제거
+
+요청
+```
+{
+    "user_id": 1,
+    "room_id": 1
+}
+```
+
+응답
+```
+{ }
+
+200 ok
+400 요청 형식 맞지 않음
+403 해당 유저가 해당 방의 마스터가 아님
+404 해당 방이 존재하지 않음
+```
