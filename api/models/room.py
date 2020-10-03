@@ -15,7 +15,7 @@ class Room(Base):
     created_on = Column(DateTime, nullable=False, unique=False, default=datetime.datetime.now)  # 생성 날짜
     deleted_on = Column(DateTime, nullable=True, unique=False)  # 제거 날짜
     maximum_population = Column(Integer, nullable=True, unique=False)
-    room_member = relationship('RoomMember', backref=backref('room'))
+    room_member = relationship('RoomMember', lazy='subquery', backref=backref('room'))
 
 
 class RoomMember(Base):
