@@ -42,7 +42,8 @@ def serialize(user, **kwargs):
 def serialize(room, **kwargs):
     result = {
         'id': room.id,
-        'master': room.master,
+        'master_id': room.master_id,
+        'title': room.title,
         'maximum_population': room.maximum_population,
     }
 
