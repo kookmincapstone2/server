@@ -31,7 +31,7 @@ def serialize(input_list, **kwargs):
 @serialize.of(User)
 def serialize(user, **kwargs):
     result = {
-        'id': user.id,
+        'user_id': user.id,
         'name': user.name
     }
 
@@ -41,7 +41,7 @@ def serialize(user, **kwargs):
 @serialize.of(Room)
 def serialize(room, **kwargs):
     result = {
-        'id': room.id,
+        'room_id': room.id,
         'master_id': room.master_id,
         'title': room.title,
         'maximum_population': room.maximum_population,

@@ -20,7 +20,7 @@ def post_room_management(data, db):  # 방 생성
     master = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체를 가져옴
 
     if not master:  # 해당 유저가 존재 하지 않음
-        raise Conflict
+        raise NotFound
 
     new_room = Room(master_id=master.id,  # 새로운 방 생성
                     title=data['title'])
@@ -51,7 +51,7 @@ def get_room_management(data, db):  # 가입된 방을 검색함
     user = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체 가져옴
 
     if not user:  # 해당 유저가 존재하지 않음
-        raise Conflict
+        raise NotFound
 
     room_members = db.query(RoomMember).filter(RoomMember.member_id == user.id).all()  # 유저가 가입된 방을 모두 가져옴
 
@@ -72,12 +72,12 @@ def put_room_management(data, db):  # 방 정보 수정
     user = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체 가져옴
 
     if not user:  # 해당 유저가 존재하지 않음
-        raise Conflict
+        raise NotFound
 
     room = db.query(Room).filter(Room.id == data['room_id']).first()
 
     if not room:  # 해당 방이 존재하지 않음
-        raise Conflict
+        raise NotFound
 
     if not user.id == room.master_id:  # 해당 유저가 마스터가 아니어서 수정 권한이 없음
         raise Forbidden
@@ -101,7 +101,7 @@ def delete_room_management(data, db):
     room = db.query(Room).filter(Room.id == data['room_id']).first()
 
     if not room:  # 해당 방이 존재하지 않음
-        raise Conflict
+        raise NotFound
 
     if not str(room.master_id) == data['user_id']:  # 해당 유저가 마스터가 아니어서 권한이 없음
         raise Forbidden
