@@ -50,10 +50,10 @@ def serialize(room, **kwargs):
     return result
 
 
-# @serialize(RoomMember)
-# def serialize(room_member, **kwargs):
-#     result = {
-#         'member': serialize(room_member.member)
-#     }
-#
-#     return result
+@serialize.of(RoomMember)
+def serialize(room_member, **kwargs):
+    result = {
+        'room_id': serialize(room_member.room_id)
+    }
+
+    return result
