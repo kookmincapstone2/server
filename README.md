@@ -92,7 +92,7 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
     "email": "test@test.test",
     "pw": "test123!@#",
     "name": "tester",
-    "student_id": 20153159,
+    "student_id": "20153159",
     "phone": "01012341234"
 }
 ```
