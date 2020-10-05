@@ -11,6 +11,6 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     pw = Column(String, nullable=False)
     name = Column(String, nullable=False)
-    student_id = Column(Integer, nullable=False)
+    student_id = Column(String, nullable=False)
     phone = Column(String, unique=True, nullable=False)
     room = relationship('Room', lazy='subquery', backref=backref('user'))
