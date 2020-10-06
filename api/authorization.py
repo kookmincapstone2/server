@@ -69,6 +69,6 @@ def post_authorization_login(data, db):
     user = db.query(User).filter(User.email == data['email'],
                                  User.pw == data['pw']).first()
     if not user:  # email 또는 pw이 틀림
-        raise NotFound
+        return jsonify({'reason': 'login fail'}), 404
 
     return jsonify(serialize(user))
