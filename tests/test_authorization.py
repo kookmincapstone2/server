@@ -10,6 +10,9 @@ def test_post_authorization_signup(client):
     res = client.post('/api/authorization/signup', data=data)
     assert res.status_code == 200
 
+    res = client.post('/api/authorization/signup', data=data)  # 이미 존재하는 이메일 또는 핸드폰번호를 입력한 경우
+    assert res.status_code == 401
+
 
 def test_get_authorization_email(client, user):
     data = {

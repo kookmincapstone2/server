@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from werkzeug.exceptions import BadRequest, Conflict, NotFound
+from werkzeug.exceptions import BadRequest, Conflict, Unauthorized
 
 from api.models.user import User
 from settings.serialize import serialize
@@ -15,6 +15,14 @@ def post_authorization_signup(data, db):
     for i in req_list:  # 요청 검사
         if i not in data:
             raise BadRequest
+
+    user = db.query(User).filter(User.email == data['email']).first()
+    if user:  # 이미 존재하는 이메일
+        raise Unauthorized
+
+    user = db.query(User).filter(User.phone == data['phone']).first()
+    if user:  # 이미 존재하는 핸드폰번호
+        raise Unauthorized
 
     new_user = User(email=data['email'],
                     pw=data['pw'],
@@ -69,6 +77,6 @@ def post_authorization_login(data, db):
     user = db.query(User).filter(User.email == data['email'],
                                  User.pw == data['pw']).first()
     if not user:  # email 또는 pw이 틀림
-        raise NotFound
+        return jsonify({'reason': 'login fail'}), 404
 
     return jsonify(serialize(user))
