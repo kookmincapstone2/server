@@ -27,3 +27,5 @@ class RoomMember(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     room_id = Column(Integer, ForeignKey('room.id'))
     member_id = Column(Integer, ForeignKey('user.id'))
+    created_on = Column(DateTime, nullable=False, unique=False, default=datetime.datetime.now)  # 생성 날짜
+    deleted_on = Column(DateTime, nullable=True, unique=False)  # 제거 날짜
