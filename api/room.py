@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify
-from werkzeug.exceptions import BadRequest, NotFound, Conflict, Forbidden
+from werkzeug.exceptions import BadRequest, NotFound, Forbidden
 
 from api.models.room import *
 from api.models.user import User
 from settings.serialize import serialize
-from settings.utils import api
+from settings.utils import api, check_data
 
 app = Blueprint('room', __name__, url_prefix='/api')
 
@@ -13,9 +13,7 @@ app = Blueprint('room', __name__, url_prefix='/api')
 @api
 def post_room_management(data, db):  # 방 생성
     req_list = ['user_id', 'title']
-    for i in req_list:
-        if i not in data:
-            raise BadRequest
+    check_data(data, req_list)
 
     master = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체를 가져옴
 
@@ -44,9 +42,7 @@ def post_room_management(data, db):  # 방 생성
 @api
 def get_room_management(data, db):  # 가입된 방을 검색함
     req_list = ['user_id']
-    for i in req_list:
-        if i not in data:
-            raise BadRequest
+    check_data(data, req_list)
 
     user = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체 가져옴
 
@@ -65,9 +61,7 @@ def get_room_management(data, db):  # 가입된 방을 검색함
 @api
 def put_room_management(data, db):  # 방 정보 수정
     req_list = ['user_id', 'room_id', 'title', 'maximum_population']
-    for i in req_list:
-        if i not in data:
-            raise BadRequest
+    check_data(data, req_list)
 
     user = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체 가져옴
 
@@ -94,9 +88,7 @@ def put_room_management(data, db):  # 방 정보 수정
 @api
 def delete_room_management(data, db):
     req_list = ['user_id', 'room_id']
-    for i in req_list:
-        if i not in data:
-            raise BadRequest
+    check_data(data, req_list)
 
     room = db.query(Room).filter(Room.id == data['room_id']).first()
 
@@ -109,4 +101,12 @@ def delete_room_management(data, db):
     db.delete(room)
     db.commit()
 
+    return jsonify({})
+
+
+@app.route('/room/member/management', methods=['POST'])
+@api
+def post_room_member_management(data, db):
+    req_list = ['room_id']
+    check_data(data, req_list)
     return jsonify({})

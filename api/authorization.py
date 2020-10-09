@@ -3,7 +3,7 @@ from werkzeug.exceptions import BadRequest, Conflict, Unauthorized
 
 from api.models.user import User
 from settings.serialize import serialize
-from settings.utils import api
+from settings.utils import api, check_data
 
 app = Blueprint('auth', __name__, url_prefix='/api')
 
@@ -12,9 +12,7 @@ app = Blueprint('auth', __name__, url_prefix='/api')
 @api
 def post_authorization_signup(data, db):
     req_list = ['email', 'pw', 'name', 'student_id', 'phone']
-    for i in req_list:  # 요청 검사
-        if i not in data:
-            raise BadRequest
+    check_data(data, req_list)
 
     user = db.query(User).filter(User.email == data['email']).first()
     if user:  # 이미 존재하는 이메일
@@ -40,9 +38,7 @@ def post_authorization_signup(data, db):
 @api
 def get_authorization_email(data, db):
     req_list = ['email']
-    for i in req_list:  # 요청 검사
-        if i not in data:
-            raise BadRequest
+    check_data(data, req_list)
 
     user = db.query(User).filter(User.email == data['email']).first()
     if user:  # 이미 사용중인 이메일
@@ -55,9 +51,7 @@ def get_authorization_email(data, db):
 @api
 def get_authorization_phone(data, db):
     req_list = ['phone']
-    for i in req_list:  # 요청 검사
-        if i not in data:
-            raise BadRequest
+    check_data(data, req_list)
 
     user = db.query(User).filter(User.phone == data['phone']).first()
     if user:  # 이미 사용중인 전화번호
@@ -70,9 +64,7 @@ def get_authorization_phone(data, db):
 @api
 def post_authorization_login(data, db):
     req_list = ['email', 'pw']
-    for i in req_list:  # 요청 검사
-        if i not in data:
-            raise BadRequest
+    check_data(data, req_list)
 
     user = db.query(User).filter(User.email == data['email'],
                                  User.pw == data['pw']).first()
