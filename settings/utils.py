@@ -1,6 +1,7 @@
 import functools
 
 from flask import request
+from werkzeug.exceptions import BadRequest
 
 from db import Database
 
@@ -18,3 +19,9 @@ def api(f):
             return f(data, db, *args, **kwargs)
 
     return deco
+
+
+def check_data(data, req_list):
+    for i in req_list:
+        if i not in data:
+            raise BadRequest
