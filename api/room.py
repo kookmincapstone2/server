@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from werkzeug.exceptions import NotFound, Forbidden, Unauthorized, Conflict
+from werkzeug.exceptions import NotFound, Forbidden, Conflict
 
 from api.models.room import *
 from api.models.user import User
@@ -40,21 +40,16 @@ def post_room_management(data, db):  # 방 생성
 
 @app.route('/room/management', methods=['GET'])
 @api
-def get_room_management(data, db):  # 가입된 방을 검색함
-    req_list = ['user_id']
+def get_room_management(data, db):  # 해당 방의 정보를 가져옴
+    req_list = ['room_id']
     check_data(data, req_list)
 
-    user = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체 가져옴
-
-    if not user:  # 해당 유저가 존재하지 않음
+    room = db.query(Room).filter(Room.id == data['room_id'],
+                                 Room.deleted_on.is_(None), ).first()
+    if not room:  # 해당 방이 존재하지 않음
         raise NotFound
 
-    room_members = db.query(RoomMember).filter(RoomMember.member_id == user.id).all()  # 유저가 가입된 방을 모두 가져옴
-
-    if not room_members:  # 가입된 방이 없음
-        raise NotFound
-
-    return jsonify(serialize(room_members))
+    return jsonify(serialize(room))
 
 
 @app.route('/room/management', methods=['PUT'])
@@ -68,7 +63,8 @@ def put_room_management(data, db):  # 방 정보 수정
     if not user:  # 해당 유저가 존재하지 않음
         raise NotFound
 
-    room = db.query(Room).filter(Room.id == data['room_id']).first()
+    room = db.query(Room).filter(Room.id == data['room_id'],
+                                 Room.deleted_on.is_(None), ).first()
 
     if not room:  # 해당 방이 존재하지 않음
         raise NotFound
@@ -90,7 +86,8 @@ def delete_room_management(data, db):  # 방 제거 함수
     req_list = ['user_id', 'room_id']
     check_data(data, req_list)
 
-    room = db.query(Room).filter(Room.id == data['room_id']).first()
+    room = db.query(Room).filter(Room.id == data['room_id'],
+                                 Room.deleted_on.is_(None), ).first()
 
     if not room:  # 해당 방이 존재하지 않음
         raise NotFound
@@ -107,16 +104,18 @@ def delete_room_management(data, db):  # 방 제거 함수
 @app.route('/room/member/management', methods=['POST'])
 @api
 def post_room_member_management(data, db):  # 방 가입 함수
-    req_list = ['user_id', 'room_id', 'invite_code']
+    req_list = ['user_id', 'invite_code']
     check_data(data, req_list)
 
     user = db.query(User).filter(User.id == data['user_id']).first()
     if not user:  # 해당 유저 존재하지 않음
         raise NotFound
 
-    room = db.query(Room).filter(Room.id == data['room_id']).first()
-    if not room:  # 해당 방 존재하지 않음
-        raise NotFound
+    room = db.query(Room).filter(Room.invite_code == data['invite_code'],
+                                 Room.deleted_on.is_(None), ).first()
+
+    if not room.invite_code == data['invite_code']:  # 초대코드가 맞지 않음
+        raise Forbidden
 
     room_member = db.query(RoomMember).filter(RoomMember.room_id == data['room_id'],
                                               RoomMember.member_id == data['user_id'],
@@ -124,8 +123,10 @@ def post_room_member_management(data, db):  # 방 가입 함수
     if room_member:  # 이미 가입된 방
         raise Conflict
 
-    if not room.invite_code == data['invite_code']:  # 초대코드가 맞지 않음
-        raise Unauthorized
+    all_room_member_count = db.query(RoomMember).filter(RoomMember.member_id == data['user_id'],
+                                                        RoomMember.deleted_on.is_(None), ).count()
+    if room.maximum_population == all_room_member_count:  # 가입 가능 인원수 초과
+        raise Conflict
 
     new_room_member = RoomMember(room_id=data['room_id'],
                                  member_id=data['user_id'], )
@@ -135,9 +136,29 @@ def post_room_member_management(data, db):  # 방 가입 함수
     return jsonify({})
 
 
-@app.route('/rom/member/management', methods=['DELETE'])
+@app.route('/room/member/management', methods=['GET'])
 @api
-def delete_room_member_management(data, db):
+def get_room_member_management(data, db):  # 가입된 방을 모두 가져오는 함수
+    req_list = ['user_id']
+    check_data(data, req_list)
+
+    user = db.query(User).filter(User.id == data['user_id']).first()  # 유저 객체 가져옴
+
+    if not user:  # 해당 유저가 존재하지 않음
+        raise NotFound
+
+    room_members = db.query(RoomMember).filter(RoomMember.member_id == user.id,
+                                               RoomMember.deleted_on.is_(None), ).all()  # 유저가 가입된 방을 모두 가져옴
+
+    if not room_members:  # 가입된 방이 없음
+        raise NotFound
+
+    return jsonify(serialize(room_members))
+
+
+@app.route('/room/member/management', methods=['DELETE'])
+@api
+def delete_room_member_management(data, db):  # 방 탈퇴 함수
     req_list = ['user_id', 'room_id']
     check_data(data, req_list)
 
