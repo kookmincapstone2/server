@@ -113,13 +113,11 @@ def post_room_member_management(data, db):  # 방 가입 함수
 
     room = db.query(Room).filter(Room.invite_code == data['invite_code'],
                                  Room.deleted_on.is_(None), ).first()
+    if not room:  # 해당 초대코드 존재하지 않음
+        raise NotFound
 
-    if not room.invite_code == data['invite_code']:  # 초대코드가 맞지 않음
-        raise Forbidden
-
-    room_member = db.query(RoomMember).filter(RoomMember.room_id == data['room_id'],
-                                              RoomMember.member_id == data['user_id'],
-                                              RoomMember.deleted_on.is_(None), ).first()
+    room_member = db.query(RoomMember).filter(RoomMember.member_id == data['user_id'],
+                                              RoomMember.room_id == room.id).first()
     if room_member:  # 이미 가입된 방
         raise Conflict
 
@@ -128,8 +126,8 @@ def post_room_member_management(data, db):  # 방 가입 함수
     if room.maximum_population == all_room_member_count:  # 가입 가능 인원수 초과
         raise Conflict
 
-    new_room_member = RoomMember(room_id=data['room_id'],
-                                 member_id=data['user_id'], )
+    new_room_member = RoomMember(room_id=room.id,
+                                 member_id=data['user_id'])
     db.add(new_room_member)
     db.commit()
 
