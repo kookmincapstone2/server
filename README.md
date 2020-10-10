@@ -157,27 +157,26 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 ```
 
 [GET] /api/room/management  
-가입된 방 조회
+방 정보 받아오기
 
 요청
 ```
 {
-    "user_id": 1
+    "room_id": 1,
 }
 ```
 
 응답
 ```
 {
-    "RoomMember": [
-        "room_id": 1,
-    ]
+    "room_id": 1,
+    "master_id": 1,
+    "title": "test_title",
+    "maximum_population": 30,
+    "invite_code": uuid
 }
-
-200 ok
-400 요청 형식 맞지 않음
-404 해당 유저 존재하지 않음 or 가입된 방이 없음
 ```
+
 
 [PUT] /api/room/management  
 자신이 생성한 방 수정
@@ -226,4 +225,68 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 400 요청 형식 맞지 않음
 403 해당 유저가 해당 방의 마스터가 아님
 404 해당 방이 존재하지 않음
+```
+
+[POST] /api/room/member/management  
+방에 가입
+
+요청
+```
+{
+    "user_id": 1,
+    "invite_code": uuid
+}
+```
+
+응답
+```
+{ }
+
+200 ok
+400 요청 형식 맞지 않음
+404 해당 유저 존재하지 않음 or 존재하지 않는 초대 코드
+409 이미 가입된 방 or 최대 가입 인원수 초과
+```
+
+[GET] /api/room/member/management  
+가입된 방 모두 보기
+
+요청
+```
+{
+    "user_id": 1
+}
+```
+
+응답
+```
+{
+    "RoomMember": [
+        "room_id": 1,
+    ]
+}
+
+200 ok
+400 요청 형식 맞지 않음
+404 해당 유저 존재하지 않음 or 가입된 방이 없음
+```
+
+[DELETE] /api/room/member/management  
+방 탈퇴
+
+요청
+```
+{
+    "user_id": 1,
+    "room_id": 1,
+}
+```
+
+응답
+```
+{ }
+
+200 ok
+400 요청 형식 맞지 않음
+404 해당 유저 존재하지 않음 or 해당 방 존재하지 않음 or 가입되지 않은 방
 ```

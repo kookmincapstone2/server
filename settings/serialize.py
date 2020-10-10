@@ -45,6 +45,7 @@ def serialize(room, **kwargs):
         'master_id': room.master_id,
         'title': room.title,
         'maximum_population': room.maximum_population,
+        'invite_code': room.invite_code,
     }
 
     return result

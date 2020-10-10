@@ -80,3 +80,24 @@ def user():
         new_user.room.append(new_room)
 
         return new_user
+
+
+@fixture()
+def basic_user():
+    global ID_NUM
+    ID_NUM = ID_NUM + 1
+    with Database() as db:
+        new_user = User(
+            email=f'master{ID_NUM}@master.master',
+            pw='master123!@#',
+            name=f'master{ID_NUM}',
+            student_id=ID_NUM,
+            phone=f'0100000{ID_NUM}'
+        )
+
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        db.expunge(new_user)
+
+        return new_user
