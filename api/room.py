@@ -151,7 +151,12 @@ def get_room_member_management(data, db):  # 가입된 방을 모두 가져오�
     if not room_members:  # 가입된 방이 없음
         raise NotFound
 
-    return jsonify(serialize(room_members))
+    result = {}
+    for index, room_member in enumerate(room_members):
+        room = db.query(Room).filter(Room.id == room_member.room_id).first()
+        result[str(index)] = serialize(room)
+
+    return jsonify(result)
 
 
 @app.route('/room/member/management', methods=['DELETE'])
