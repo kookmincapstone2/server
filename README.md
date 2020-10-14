@@ -261,9 +261,14 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 응답
 ```
 {
-    "RoomMember": [
+    "0": {
         "room_id": 1,
-    ]
+        "master_id": 1,
+        "title": "test_title",
+        "maximum_population": 30,
+        "invite_code": uuid
+    },
+    "1": {...},
 }
 
 200 ok
