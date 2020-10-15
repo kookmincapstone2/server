@@ -24,7 +24,7 @@ def post_room_management(data, db):  # 방 생성
                     title=data['title'])
 
     if 'maximum_population' in data:  # 최대 인원을 제한했다면 정보 넣어줌
-        Room.maximum_population = data['maximum_population']
+        new_room.maximum_population = data['maximum_population']
 
     db.add(new_room)
     db.commit()

@@ -1,3 +1,6 @@
+import json
+
+
 def test_post_room_management(client, user):
     data = {
         'user_id': user.id,
@@ -70,3 +73,24 @@ def test_delete_room_member_management(client, user):
 
     res = client.delete('/api/room/member/management', query_string=data)
     assert res.status_code == 200
+
+
+def test_post_room_management(client, basic_user):  # maximum_population write test 2020-10-16
+    data = {
+        'user_id': basic_user.id,
+        'title': 'test_room_title-2020-10-16',
+        'maximum_population': 60,
+    }
+
+    res = client.post('/api/room/management', data=data)  # room 생성
+    assert res.status_code == 200
+
+    room_id = json.loads(res.data.decode())['room_id']  # 생성한 room id
+
+    data = {
+        'room_id': room_id
+    }
+
+    res = client.get('/api/room/management', query_string=data)
+    assert res.status_code == 200
+    assert json.loads(res.data.decode())['maximum_population'] == 60
