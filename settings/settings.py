@@ -15,7 +15,7 @@ PASSWOLRD = 'root'  # postgresql pw
 DB_PORT = '5432'  # postgresql port
 NAME = 'capstone2'  # db name
 DB_URI = f'postgresql://{USER}:{PASSWOLRD}@{HOST_ADDR}:{DB_PORT}/'  # postgresql uri
-RDS_ENDPOINT = 'capstone2.cebsh5dyebyf.ap-northeast-2.rds.amazonaws.com'
+RDS_ENDPOINT = 'database-1.cebsh5dyebyf.ap-northeast-2.rds.amazonaws.com'
 # select operation mode
 if MODE == 'TEST' or sys.argv[0].endswith('test'):  # use only pytest
     HOST_ADDR = '127.0.0.1'
