@@ -1,7 +1,7 @@
 import datetime
 import uuid
 
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy_utils import UUIDType
 
@@ -29,3 +29,13 @@ class RoomMember(Base):
     member_id = Column(Integer, ForeignKey('user.id'))
     created_on = Column(DateTime, nullable=False, unique=False, default=datetime.datetime.now)  # 생성 날짜
     deleted_on = Column(DateTime, nullable=True, unique=False)  # 제거 날짜
+
+
+class AttendanceCheck(Base):
+    __tablename__ = 'attendance_check'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    room_id = Column(Integer, ForeignKey('room.id'))
+    created_on = Column(DateTime, nullable=False, unique=False, default=datetime.datetime.now)  # 생성 날짜
+    is_checked = Column(Boolean, nullable=False, unique=False, default=False)  # 출석 체크 여부
+    pass_num = Column(String, nullable=False, unique=False)  # 출석 비밀번호
