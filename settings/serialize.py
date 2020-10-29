@@ -32,7 +32,8 @@ def serialize(input_list, **kwargs):
 def serialize(user, **kwargs):
     result = {
         'user_id': user.id,
-        'name': user.name
+        'name': user.name,
+        'rank': user.rank,
     }
 
     return result
