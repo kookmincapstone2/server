@@ -93,7 +93,8 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
     "pw": "test123!@#",
     "name": "tester",
     "student_id": "20153159",
-    "phone": "01012341234"
+    "phone": "01012341234",
+    "rank": "teacher" or "student"
 }
 ```
 
@@ -103,7 +104,7 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 
 200 ok
 401 이미 존재하는 이메일 or 이미 존재하는 핸드폰번호
-400 요청 형식 맞지 않음
+400 요청 형식 맞지 않음 or  teacher, student 중 하나가 아님
 ```
 
 [POST] /api/authorization/login  
@@ -121,7 +122,8 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 ```
 {
     "id": 1,
-    "name": "tester"
+    "name": "tester",
+    "rank": "teacher"
 }
 
 200 ok
