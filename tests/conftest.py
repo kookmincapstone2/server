@@ -48,7 +48,8 @@ def user():
             pw='master123!@#',
             name=f'master{ID_NUM}',
             student_id=ID_NUM,
-            phone=f'0100000{ID_NUM}'
+            phone=f'0100000{ID_NUM}',
+            rank='student',
         )
 
         db.add(new_user)
@@ -92,7 +93,8 @@ def basic_user():
             pw='master123!@#',
             name=f'master{ID_NUM}',
             student_id=ID_NUM,
-            phone=f'0100000{ID_NUM}'
+            phone=f'0100000{ID_NUM}',
+            rank='teacher',
         )
 
         db.add(new_user)
