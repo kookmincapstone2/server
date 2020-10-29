@@ -5,9 +5,13 @@ def test_post_authorization_signup(client):
         'name': 'tester',
         'student_id': 20153159,
         'phone': '01012341234',
-        'rank': 'student',
+        'rank': 'trash',
     }
 
+    res = client.post('/api/authorization/signup', data=data)
+    assert res.status_code == 400  # rank가 선생 또는 학생이 아님
+
+    data['rank'] = 'teacher'
     res = client.post('/api/authorization/signup', data=data)
     assert res.status_code == 200
 
