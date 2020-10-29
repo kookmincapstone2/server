@@ -11,7 +11,7 @@ app = Blueprint('auth', __name__, url_prefix='/api')
 @app.route('/authorization/signup', methods=['POST'])
 @api
 def post_authorization_signup(data, db):
-    req_list = ['email', 'pw', 'name', 'student_id', 'phone']
+    req_list = ['email', 'pw', 'name', 'student_id', 'phone', 'rank']
     check_data(data, req_list)
 
     user = db.query(User).filter(User.email == data['email']).first()
@@ -22,11 +22,15 @@ def post_authorization_signup(data, db):
     if user:  # 이미 존재하는 핸드폰번호
         raise Unauthorized
 
+    if not data['rank'] == 'teacher' and not data['rank'] == 'student':  # 학생 또는 선생이 아닐 경우 잘못된 요청
+        raise BadRequest
+
     new_user = User(email=data['email'],
                     pw=data['pw'],
                     name=data['name'],
                     student_id=data['student_id'],
-                    phone=data['phone'])  # 새로운 유저 생성
+                    phone=data['phone'],
+                    rank=data['rank'])  # 새로운 유저 생성
 
     db.add(new_user)
     db.commit()
