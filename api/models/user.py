@@ -14,3 +14,4 @@ class User(Base):
     student_id = Column(String, nullable=False)
     phone = Column(String, unique=True, nullable=False)
     room = relationship('Room', lazy='subquery', backref=backref('user'))
+    rank = Column(String, unique=False, nullable=False)  # 선생 또는 학생
