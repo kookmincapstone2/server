@@ -5,6 +5,7 @@ def test_post_authorization_signup(client):
         'name': 'tester',
         'student_id': 20153159,
         'phone': '01012341234',
+        'rank': 'student',
     }
 
     res = client.post('/api/authorization/signup', data=data)
