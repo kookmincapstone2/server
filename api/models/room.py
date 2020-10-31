@@ -18,7 +18,7 @@ class Room(Base):
     deleted_on = Column(DateTime, nullable=True, unique=False)  # 제거 날짜
     maximum_population = Column(Integer, nullable=True, unique=False)
     room_member = relationship('RoomMember', lazy='subquery', backref=backref('room'))
-    invite_code = Column(UUIDType, nullable=False, unique=True, default=uuid.uuid4)  # 방 초대 코드
+    invite_code = Column(String, nullable=False, unique=True, default=uuid.uuid4)  # 방 초대 코드
 
 
 class RoomMember(Base):
