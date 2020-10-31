@@ -38,8 +38,14 @@ def test_delete_room_management(client, user):
         'room_id': user.room[0].id
     }
 
+    res = client.get('/api/room/management', query_string=data)
+    assert res.status_code == 200  # 가입된 방이 존재
+
     res = client.delete('/api/room/management', query_string=data)
-    assert res.status_code == 200
+    assert res.status_code == 200  # 방 삭제
+
+    res = client.get('/api/room/management', query_string=data)
+    assert res.status_code == 404  # 가입된 방이 없음
 
 
 def test_post_room_member_management(client, user, basic_user):
