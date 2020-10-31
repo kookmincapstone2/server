@@ -107,11 +107,11 @@ def post_room_member_management(data, db):  # 방 가입 함수
     req_list = ['user_id', 'invite_code']
     check_data(data, req_list)
 
-    user = db.query(User).filter(User.id == uuid.UUID(data['user_id'])).first()
+    user = db.query(User).filter(User.id == data['user_id']).first()
     if not user:  # 해당 유저 존재하지 않음
         raise NotFound
 
-    room = db.query(Room).filter(Room.invite_code == data['invite_code'],
+    room = db.query(Room).filter(Room.invite_code == uuid.UUID(data['invite_code']),
                                  Room.deleted_on.is_(None), ).first()
     if not room:  # 해당 초대코드 존재하지 않음
         raise NotFound
