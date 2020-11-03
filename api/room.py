@@ -190,3 +190,67 @@ def delete_room_member_management(data, db):  # 방 탈퇴 함수
     db.commit()
 
     return jsonify({})
+
+
+@app.route('/room/attendance/check', methods=['POST'])
+@api
+def post_room_attendance_check(data, db):  # 출석체크 생성 함수
+    req_list = ['user_id', 'room_id', 'pass_num']
+    check_data(data, req_list)
+
+    user = db.query(User).filter(User.id == data['user_id']).first()
+    if not user:  # 해당 유저 존재하지 않음
+        raise NotFound
+
+    room = db.query(Room).filter(Room.id == data['room_id']).first()
+    if not room:  # 해당 방 존재하지 않음
+        raise NotFound
+
+    if not room.master_id == data['user_id']:  # 방의 마스터가 아님
+        raise Forbidden
+
+    room_members = db.query(RoomMember).filter(RoomMember.room_id == data['room_id'],  # 해당 방의 멤버들 가져옴
+                                               RoomMember.deleted_on.isnot(None), ).all()
+
+    for room_member in room_members:
+        new_attendance_check = AttendanceCheck(room_id=data['room_id'],
+                                               user_id=data[room_member.member_id],
+                                               pass_num=data['pass_num'], )
+        db.add(new_attendance_check)
+
+    db.commit()
+
+    return jsonify({})
+
+
+@app.route('/room/attendance/check', methods=['PUT'])  # 출석체크 함수
+@api
+def put_room_attendance_check(data, db):
+    req_list = ['user_id', 'room_id', 'pass_num']
+    check_data(data, req_list)
+
+    user = db.query(User).filter(User.id == data['user_id']).first()
+    if not user:
+        raise NotFound
+
+    room = db.query(Room).filter(Room.id == data['room_id']).first()
+    if not room:
+        raise NotFound
+
+    attendacne_check = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
+                                                        AttendanceCheck.user_id == data['user_id'],
+                                                        AttendanceCheck.pass_num == data['pass_num'], ).first()
+    if not attendacne_check:
+        raise NotFound
+
+    attendacne_check.is_checked = True  # 출석체크처리함
+    db.commit()
+
+    return jsonify({})
+
+
+@app.route('room/attendance/check', methods=['GET'])  # 출석체크 현황 확인하는 함수
+@api
+def get_room_attendance_check(data, db):
+    pass
+    # todo 출결현황 출력하기
