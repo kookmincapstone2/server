@@ -45,6 +45,9 @@ def test_delete_room_management(client, user):
     assert res.status_code == 200  # 방 삭제
 
     res = client.get('/api/room/management', query_string=data)
+    assert res.status_code == 404  # 해당 방이 없음
+
+    res = client.get('/api/room/member/management', query_string=data)
     assert res.status_code == 404  # 가입된 방이 없음
 
 
