@@ -96,6 +96,12 @@ def delete_room_management(data, db):  # 방 제거 함수
         raise Forbidden
 
     room.deleted_on = datetime.datetime.now()
+
+    room_members = db.query(RoomMember).filter(RoomMember.room_id == data['room_id']).all()
+
+    for room_member in room_members:  # 해당 방의 모든 유저 삭제
+        room_member.deleted_on = datetime.datetime.now()
+
     db.commit()
 
     return jsonify({})
