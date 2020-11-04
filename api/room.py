@@ -137,7 +137,7 @@ def post_room_member_management(data, db):  # 방 가입 함수
     db.add(new_room_member)
     db.commit()
 
-    return jsonify({})
+    return jsonify(serialize(room))
 
 
 @app.route('/room/member/management', methods=['GET'])
