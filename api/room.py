@@ -212,6 +212,12 @@ def post_room_attendance_check(data, db):  # 출석체크 생성 함수
     room_members = db.query(RoomMember).filter(RoomMember.room_id == data['room_id'],  # 해당 방의 멤버들 가져옴
                                                RoomMember.deleted_on.isnot(None), ).all()
 
+    attendance_checks = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
+                                                         AttendanceCheck.is_valid is True, ).all()  # 아직 유요한 출첵을 가져옴
+    for attendance_check in attendance_checks:  # 모두 유요하지 않게 수정
+        attendance_check.is_valid = False
+    db.commit()
+
     for room_member in room_members:
         new_attendance_check = AttendanceCheck(room_id=data['room_id'],
                                                user_id=data[room_member.member_id],
@@ -252,5 +258,23 @@ def put_room_attendance_check(data, db):
 @app.route('room/attendance/check', methods=['GET'])  # 출석체크 현황 확인하는 함수
 @api
 def get_room_attendance_check(data, db):
-    pass
-    # todo 출결현황 출력하기
+    req_list = ['user_id', 'room_id']
+    check_data(data, req_list)
+
+    room = db.query(Room).filter(Room.id == data['room_id']).first()
+    if not room.master_id == data['user_id']:  # 마스터가 아님
+        raise Forbidden
+
+    attendance_checks = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
+                                                         AttendanceCheck.is_valid is True, ).all()
+    result = {
+        'checked': {},
+        'unchecked': {},
+    }
+    for attendance_check in attendance_checks:
+        if attendance_check.is_checked is True:
+            result['checked'][str(attendance_check.user_id)] = db.query(User).filter(
+                id=attendance_check.user_id).first()
+        else:
+            result['unchecked'][str(attendance_check.user_id)] = db.query(User).filter(
+                id=attendance_check.user_id).first()
