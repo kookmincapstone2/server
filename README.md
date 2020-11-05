@@ -151,6 +151,7 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
     "master_id": 1,
     "title": "test_room_title",
     "maximum_population": 60,
+    "invite_code": uuid
 }
 
 200 ok
@@ -200,6 +201,7 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
     "master_id": 1,
     "title": "modified_title",
     "maximum_population": 50,
+    "invite_code": uuid
 }
 
 200 ok
@@ -242,7 +244,13 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 
 응답
 ```
-{ }
+{
+    "room_id": 1,
+    "master_id": 1,
+    "title": "test_title",
+    "maximum_population": 50,
+    "invite_code": uuid
+}
 
 200 ok
 400 요청 형식 맞지 않음
