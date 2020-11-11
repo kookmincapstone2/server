@@ -305,3 +305,77 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 400 요청 형식 맞지 않음
 404 해당 유저 존재하지 않음 or 해당 방 존재하지 않음 or 가입되지 않은 방
 ```
+
+[POST] /api/room/attendance/check  
+출석체크 생성 ( 선생용 )
+
+요청
+```
+{
+    "user_id": 1,
+    "room_id": 1,
+    "pass_num": "123445678"
+}
+```
+
+응답
+```
+{ }
+
+200 ok
+400 요청 형식 맞지 않음
+403 방의 마스터가 아님
+404 해당 유저 or 해당 방 존재하지 않음
+```
+
+[PUT] /api/room/attendance/check  
+출석체크 ( 학생용 )
+
+요청
+```
+{
+    "user_id": 1,
+    "room_id": 1,
+    "pass_num": "12345678"
+}
+```
+
+응답
+```
+{ }
+
+200 ok
+400 요청 형식 맞지 않음
+404 해당 유저 or 해당 방 or 해당 출석코드 존재하지 않음
+```
+
+[GET] /api/room/attendance/check  
+출석체크 현황 확인
+
+요청
+```
+{
+    "user_id": 1,
+    "room_id": 1
+}
+```
+
+응답
+```
+{
+    "checked": {
+        1: {
+            "user_id": 1,
+            "name": "tester",
+            "rank": "student"
+        }, ...
+    },
+    "unchecked": {
+        2: {
+            "user_id": 2,
+            "name": "tester2",
+            "rank": "student"
+        }, ...
+    }
+}
+```
