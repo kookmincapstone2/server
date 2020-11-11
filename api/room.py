@@ -255,7 +255,7 @@ def put_room_attendance_check(data, db):
     return jsonify({})
 
 
-@app.route('room/attendance/check', methods=['GET'])  # 출석체크 현황 확인하는 함수
+@app.route('/room/attendance/check', methods=['GET'])  # 출석체크 현황 확인하는 함수
 @api
 def get_room_attendance_check(data, db):
     req_list = ['user_id', 'room_id']
@@ -278,3 +278,5 @@ def get_room_attendance_check(data, db):
         else:
             result['unchecked'][str(attendance_check.user_id)] = db.query(User).filter(
                 id=attendance_check.user_id).first()
+
+    return jsonify(result)
