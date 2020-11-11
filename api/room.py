@@ -206,24 +206,23 @@ def post_room_attendance_check(data, db):  # 출석체크 생성 함수
     if not room:  # 해당 방 존재하지 않음
         raise NotFound
 
-    if not room.master_id == data['user_id']:  # 방의 마스터가 아님
+    if not int(room.master_id) == int(data['user_id']):  # 방의 마스터가 아님
         raise Forbidden
 
-    room_members = db.query(RoomMember).filter(RoomMember.room_id == data['room_id'],  # 해당 방의 멤버들 가져옴
-                                               RoomMember.deleted_on.isnot(None), ).all()
-
     attendance_checks = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
-                                                         AttendanceCheck.is_valid is True, ).all()  # 아직 유요한 출첵을 가져옴
+                                                         AttendanceCheck.is_valid.is_(True), ).all()  # 아직 유요한 출첵을 가져옴
     for attendance_check in attendance_checks:  # 모두 유요하지 않게 수정
         attendance_check.is_valid = False
     db.commit()
 
+    room_members = db.query(RoomMember).filter(RoomMember.room_id == data['room_id'],  # 해당 방의 멤버들 가져옴
+                                               RoomMember.deleted_on is not None).all()
+
     for room_member in room_members:
         new_attendance_check = AttendanceCheck(room_id=data['room_id'],
-                                               user_id=data[room_member.member_id],
-                                               pass_num=data['pass_num'], )
+                                               user_id=room_member.member_id,
+                                               pass_num=data['pass_num'])
         db.add(new_attendance_check)
-
     db.commit()
 
     return jsonify({})
@@ -262,21 +261,21 @@ def get_room_attendance_check(data, db):
     check_data(data, req_list)
 
     room = db.query(Room).filter(Room.id == data['room_id']).first()
-    if not room.master_id == data['user_id']:  # 마스터가 아님
+    if not room.master_id == int(data['user_id']):  # 마스터가 아님
         raise Forbidden
 
     attendance_checks = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
-                                                         AttendanceCheck.is_valid is True, ).all()
+                                                         AttendanceCheck.is_valid.is_(True)).all()
     result = {
         'checked': {},
         'unchecked': {},
     }
     for attendance_check in attendance_checks:
         if attendance_check.is_checked is True:
-            result['checked'][str(attendance_check.user_id)] = db.query(User).filter(
-                id=attendance_check.user_id).first()
+            result['checked'][str(attendance_check.user_id)] = serialize(db.query(User).filter(
+                User.id == attendance_check.user_id).first())
         else:
-            result['unchecked'][str(attendance_check.user_id)] = db.query(User).filter(
-                id=attendance_check.user_id).first()
+            result['unchecked'][str(attendance_check.user_id)] = serialize(db.query(User).filter(
+                User.id == attendance_check.user_id).first())
 
     return jsonify(result)

@@ -103,3 +103,42 @@ def test_post_room_management(client, basic_user):  # maximum_population write t
     res = client.get('/api/room/management', query_string=data)
     assert res.status_code == 200
     assert json.loads(res.data.decode())['maximum_population'] == 60
+
+
+def test_post_room_attendance_check(client, user):
+    data = {
+        'user_id': user.id,
+        'room_id': user.room[0].id,
+        'pass_num': '0123456789',
+    }
+
+    res = client.post('/api/room/attendance/check', data=data)
+    assert res.status_code == 200
+
+
+def test_put_room_attendance_check(client, user):
+    data = {
+        'user_id': user.id,
+        'room_id': user.room[0].id,
+        'pass_num': '0123456789'
+    }
+
+    res = client.post('/api/room/attendance/check', data=data)
+    assert res.status_code == 200  # 출석코드 생성
+
+    res = client.put('/api/room/attendance/check', data=data)
+    assert res.status_code == 200  # 출석체크
+
+
+def test_get_room_attendance_check(client, user):
+    data = {
+        'user_id': user.id,
+        'room_id': user.room[0].id,
+        'pass_num': '0123456789'
+    }
+
+    res = client.post('/api/room/attendance/check', data=data)
+    assert res.status_code == 200  # 출석 코드 생성
+
+    res = client.get('/api/room/attendance/check', query_string=data)
+    assert res.status_code == 200
