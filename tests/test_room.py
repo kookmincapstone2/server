@@ -142,3 +142,13 @@ def test_get_room_attendance_check(client, user):
 
     res = client.get('/api/room/attendance/check', query_string=data)
     assert res.status_code == 200
+
+
+def test_get_room_member_all(client, user):  # 방에 가입된 모든 멤버를 보여줌
+    data = {
+        'room_id': user.room[0].id,
+    }
+
+    res = client.get('/api/room/member/all', query_string=data)
+    assert res.status_code == 200
+    assert json.loads(res.data.decode())['User'][0]['user_id'] == user.id
