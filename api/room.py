@@ -123,7 +123,8 @@ def post_room_member_management(data, db):  # 방 가입 함수
         raise NotFound
 
     room_member = db.query(RoomMember).filter(RoomMember.member_id == data['user_id'],
-                                              RoomMember.room_id == room.id).first()
+                                              RoomMember.room_id == room.id,
+                                              RoomMember.deleted_on.is_(None)).first()
     if room_member:  # 이미 가입된 방
         raise Conflict
 
@@ -279,3 +280,28 @@ def get_room_attendance_check(data, db):
                 User.id == attendance_check.user_id).first())
 
     return jsonify(result)
+
+
+@app.route('/room/member/all', methods=['GET'])
+@api
+def get_room_member_all(data, db):  # 해당 방의 정보를 가져옴
+    req_list = ['room_id']
+    check_data(data, req_list)
+
+    room = db.query(Room).filter(Room.id == data['room_id'],
+                                 Room.deleted_on.is_(None), ).first()
+
+    if not room:  # 해당 방이 존재하지 않음
+        raise NotFound
+
+    room_members = db.query(RoomMember).filter(RoomMember.room_id == data['room_id'],
+                                               RoomMember.deleted_on.is_(None), ).all()
+
+    if not room_members:  # 해당 방에 멤버가 없음
+        raise NotFound
+
+    result = []
+    for room_member in room_members:
+        result.append(db.query(User).filter(User.id == room_member.member_id).first())
+
+    return jsonify(serialize(result))
