@@ -123,7 +123,8 @@ def post_room_member_management(data, db):  # 방 가입 함수
         raise NotFound
 
     room_member = db.query(RoomMember).filter(RoomMember.member_id == data['user_id'],
-                                              RoomMember.room_id == room.id).first()
+                                              RoomMember.room_id == room.id,
+                                              RoomMember.deleted_on.is_(None)).first()
     if room_member:  # 이미 가입된 방
         raise Conflict
 
