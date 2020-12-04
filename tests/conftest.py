@@ -46,10 +46,10 @@ def user():
         new_user = User(
             email=f'master{ID_NUM}@master.master',
             pw='master123!@#',
-            name=f'master{ID_NUM}',
+            name=f'teacher{ID_NUM}',
             student_id=ID_NUM,
             phone=f'0100000{ID_NUM}',
-            rank='student',
+            rank='teacher',
         )
 
         db.add(new_user)
@@ -91,10 +91,10 @@ def basic_user():
         new_user = User(
             email=f'master{ID_NUM}@master.master',
             pw='master123!@#',
-            name=f'master{ID_NUM}',
+            name=f'student{ID_NUM}',
             student_id=ID_NUM,
             phone=f'0100000{ID_NUM}',
-            rank='teacher',
+            rank='student',
         )
 
         db.add(new_user)
