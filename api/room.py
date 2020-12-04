@@ -307,7 +307,7 @@ def get_room_member_all(data, db):  # 해당 방의 정보를 가져옴
     return jsonify(serialize(result))
 
 
-@app.route('/room/member/all', methods=['GET'])
+@app.route('/room/member/attendance/rate', methods=['GET'])
 @api
 def get_personal_attendance(data, db):  # 출석률 확인 함수
     req_list = ['room_id']
