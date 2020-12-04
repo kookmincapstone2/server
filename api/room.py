@@ -317,7 +317,7 @@ def get_personal_attendance(data, db):  # 출석률 확인 함수
                                                RoomMember.deleted_on.is_(None), ).all()
 
     if not room_members:  # 해당 방에 멤버가 없음
-        raise Conflict
+        raise NotFound
 
     result = dict()
     for room_member in room_members:
