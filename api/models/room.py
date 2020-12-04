@@ -3,7 +3,6 @@ import uuid
 
 from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy_utils import UUIDType
 
 from db import Base
 
