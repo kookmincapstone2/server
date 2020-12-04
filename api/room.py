@@ -305,3 +305,35 @@ def get_room_member_all(data, db):  # 해당 방의 정보를 가져옴
         result.append(db.query(User).filter(User.id == room_member.member_id).first())
 
     return jsonify(serialize(result))
+
+
+@app.route('/room/member/all', methods=['GET'])
+@api
+def get_personal_attendance(data, db):  # 출석률 확인 함수
+    req_list = ['room_id']
+    check_data(data, req_list)
+
+    room_members = db.query(RoomMember).filter(RoomMember.room_id == data['room_id'],
+                                               RoomMember.deleted_on.is_(None), ).all()
+
+    if not room_members:  # 해당 방에 멤버가 없음
+        raise NotFound
+
+    result = dict()
+    for room_member in room_members:
+        # 개인 출석체크 모두 가져옴
+        attendance_checks = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
+                                                             AttendanceCheck.user_id == room_member.member_id, ).all()
+        temp = {
+            'checked': 0,
+            'unchecked': 0,
+        }
+        for attendance_check in attendance_checks:
+            if attendance_check.is_checked:
+                temp['checked'] = temp['checked'] + 1
+            else:
+                temp['unchecked'] = temp['unchecked'] + 1
+        temp['rate'] = temp['checked'] / (temp['checked'] + temp['unchecked'])
+        result[str(room_member.member_id)] = temp
+
+    return jsonify(result)
