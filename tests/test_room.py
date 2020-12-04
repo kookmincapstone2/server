@@ -198,3 +198,36 @@ def test_attendance_check(client, user, basic_user):  # 출석체크 똑바로 �
     res = client.get('/api/room/attendance/check', query_string=data)  # 출석 현황 검사
     assert res.status_code == 200
     assert len(json.loads(res.data.decode())['checked']) == 1
+
+
+def test_attendance_rate(client, user, basic_user):  # 출석률 나오는지 확인 2020-12-05
+    data = {
+        'user_id': basic_user.id,
+        'invite_code': user.room[0].invite_code,
+        'room_id': user.room[0].id,
+        'pass_num': 123456,
+    }
+
+    res = client.post('/api/room/member/management', data=data)  # 방에 멤버 추가
+    assert res.status_code == 200
+
+    data['user_id'] = user.id
+    res = client.post('/api/room/attendance/check', data=data)  # 출석체크 생성
+    assert res.status_code == 200
+
+    res = client.get('/api/room/attendance/check', query_string=data)  # 출석 현황 검사
+    assert res.status_code == 200
+    assert len(json.loads(res.data.decode())['checked']) == 0
+
+    data['user_id'] = basic_user.id
+    res = client.put('/api/room/attendance/check', data=data)  # 출석체크
+    assert res.status_code == 200
+
+    data['user_id'] = user.id
+    res = client.get('/api/room/attendance/check', query_string=data)  # 출석 현황 검사
+    assert res.status_code == 200
+    assert len(json.loads(res.data.decode())['checked']) == 1
+
+    res = client.get('/api/room/member/attendance/rate', query_string=data)  # 출석률 확인
+    assert res.status_code == 200
+    assert json.loads(res.data.decode())[str(basic_user.id)]['rate'] == 1.0
