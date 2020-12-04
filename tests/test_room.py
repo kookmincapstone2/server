@@ -169,3 +169,32 @@ def test_post_delete_room_member_management(client, user, basic_user):
 
     res = client.post('/api/room/member/management', data=data)  # 유저가 방에 다시 가입함
     assert res.status_code == 200
+
+
+def test_attendance_check(client, user, basic_user):  # 출석체크 똑바로 뜨는지 확인 2020-12-05
+    data = {
+        'user_id': basic_user.id,
+        'invite_code': user.room[0].invite_code,
+        'room_id': user.room[0].id,
+        'pass_num': 123456,
+    }
+
+    res = client.post('/api/room/member/management', data=data)  # 방에 멤버 추가
+    assert res.status_code == 200
+
+    data['user_id'] = user.id
+    res = client.post('/api/room/attendance/check', data=data)  # 출석체크 생성
+    assert res.status_code == 200
+
+    res = client.get('/api/room/attendance/check', query_string=data)  # 출석 현황 검사
+    assert res.status_code == 200
+    assert len(json.loads(res.data.decode())['checked']) == 0
+
+    data['user_id'] = basic_user.id
+    res = client.put('/api/room/attendance/check', data=data)  # 출석체크
+    assert res.status_code == 200
+
+    data['user_id'] = user.id
+    res = client.get('/api/room/attendance/check', query_string=data)  # 출석 현황 검사
+    assert res.status_code == 200
+    assert len(json.loads(res.data.decode())['checked']) == 1
