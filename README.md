@@ -424,10 +424,56 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
         "checked": 1,
         "unchecked": 0,
         "rate": 1.0
-    } ...
+    }, ...
 }
 
 200 ok
 400 요청 형식 맞지 않음
 404 해당 방에 가입된 멤버 없음
+```
+
+[GET] /api/room/attendance/check/all  
+학생 한명의 출석체크 현황을 보여줌
+
+요청
+```
+{
+    "user_id": 1,
+    "room_id": 1
+}
+```  
+
+응답
+```
+{
+    "2020-12-06": {
+        'attendance_check_id': 1,
+        'attendance_check_is_checked': True
+    }, ...
+}
+
+200 ok
+400 요청 형식 맞지 않음
+404 유저 또는 방 또는 출석체크가 존재하지 않음
+```
+
+[PUT] /api/room/attendance/check/close  
+현재 유효한 출석체크를 무효하게 만듦
+
+요청
+```
+{
+    "user_id": 1,
+    "room_id": 1
+}
+```
+
+응답
+```
+{ }
+
+200 ok
+400 요청 형식 맞지 않음
+403 해당 유저가 방의 마스터가 아님
+404 유저 또는 방 또는 유효한 출석체크가 존재하지 않음
 ```
