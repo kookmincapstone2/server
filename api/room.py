@@ -243,14 +243,14 @@ def put_room_attendance_check(data, db):
     if not room:
         raise NotFound
 
-    attendacne_check = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
+    attendance_check = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
                                                         AttendanceCheck.user_id == data['user_id'],
                                                         AttendanceCheck.pass_num == data['pass_num'],
                                                         AttendanceCheck.is_valid.is_(True), ).first()
-    if not attendacne_check:
+    if not attendance_check:
         raise NotFound
 
-    attendacne_check.is_checked = True  # 출석체크처리함
+    attendance_check.is_checked = True  # 출석체크처리함
     db.commit()
 
     return jsonify({})
@@ -301,11 +301,34 @@ def get_room_member_all(data, db):  # 해당 방의 정보를 가져옴
     if not room_members:  # 해당 방에 멤버가 없음
         raise NotFound
 
-    result = []
+    result = dict()
     for room_member in room_members:
-        result.append(db.query(User).filter(User.id == room_member.member_id).first())
+        attendance_checks = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
+                                                             AttendanceCheck.user_id == room_member.member_id, ).all()
+        temp = {
+            'checked': 0,
+            'unchecked': 0,
+        }
+        for attendance_check in attendance_checks:
+            if attendance_check.is_checked:
+                temp['checked'] = temp['checked'] + 1
+            else:
+                temp['unchecked'] = temp['unchecked'] + 1
 
-    return jsonify(serialize(result))
+        if temp['unchecked'] < 1:
+            if temp['checked'] > 0:
+                temp['rate'] = 1.0
+            else:
+                temp['rate'] = 0.0
+        else:
+            temp['rate'] = temp['checked'] / (temp['checked'] + temp['unchecked'])
+
+        user = db.query(User).filter(User.id == room_member.member_id).first()
+        suser = serialize(user)
+        suser['rate_info'] = temp
+        result[str(user.id)] = suser
+
+    return jsonify(result)
 
 
 @app.route('/room/member/attendance/rate', methods=['GET'])
