@@ -393,11 +393,14 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 응답  
 ```
 {
-    User: [
-        {
+    1:  {
             "user_id": 1,
             "name": "tester",
             "rank": "student"
+            "rate_info": {
+                "checke": 1,
+                "unchecked": 0,
+                "rate": 1.0,
         }, ...
     ]
 }
