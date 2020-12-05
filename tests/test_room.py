@@ -152,7 +152,8 @@ def test_get_room_member_all(client, user):  # 방에 가입된 모든 멤버를
 
     res = client.get('/api/room/member/all', query_string=data)
     assert res.status_code == 200
-    assert json.loads(res.data.decode())['User'][0]['user_id'] == user.id
+    assert len(json.loads(res.data.decode())) == 1
+    assert json.loads(res.data.decode())[str(user.id)]['rate_info']['rate'] == 0.0
 
 
 def test_post_delete_room_member_management(client, user, basic_user):
