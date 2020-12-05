@@ -212,7 +212,7 @@ def post_room_attendance_check(data, db):  # 출석체크 생성 함수
 
     attendance_checks = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
                                                          AttendanceCheck.is_valid.is_(True), ).all()  # 아직 유요한 출첵을 가져옴
-    for attendance_check in attendance_checks:  # 모두 유요하지 않게 수정
+    for attendance_check in attendance_checks:  # 모두 유효하지 않게 수정
         attendance_check.is_valid = False
     db.commit()
 
@@ -245,7 +245,8 @@ def put_room_attendance_check(data, db):
 
     attendacne_check = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
                                                         AttendanceCheck.user_id == data['user_id'],
-                                                        AttendanceCheck.pass_num == data['pass_num'], ).first()
+                                                        AttendanceCheck.pass_num == data['pass_num'],
+                                                        AttendanceCheck.is_valid.is_(True), ).first()
     if not attendacne_check:
         raise NotFound
 
@@ -337,3 +338,64 @@ def get_personal_attendance(data, db):  # 출석률 확인 함수
         result[str(room_member.member_id)] = temp
 
     return jsonify(result)
+
+
+@app.route('/room/attendance/check/all', methods=['GET'])
+@api
+def get_room_attendance_all(data, db):  # 학생 한명의 출석 현황을 보는 함수
+    req_list = ['user_id', 'room_id']
+    check_data(data, req_list)
+
+    user = db.query(User).filter(User.id == data['user_id']).first()
+
+    if not user:
+        raise NotFound
+
+    room = db.query(Room).filter(Room.id == data['room_id']).first()
+
+    if not room:
+        raise NotFound
+
+    attendance_checks = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
+                                                         AttendanceCheck.user_id == data['user_id'], ).all()
+
+    if not attendance_checks:
+        raise NotFound
+
+    result = {}
+    for attendance_check in attendance_checks:
+        result[str(attendance_check.created_on)[0:10]] = serialize(attendance_check)
+
+    return jsonify(result)
+
+
+@app.route('/room/attendance/check/close', methods=['PUT'])
+@api
+def put_room_attendance_check_close(data, db):  # 현재 유효한 출석 인증번호를 무효하게 수정하는 함수
+    req_list = ['user_id', 'room_id']
+    check_data(data, req_list)
+
+    user = db.query(User).filter(User.id == data['user_id']).first()
+
+    if not user:
+        raise NotFound
+
+    room = db.query(Room).filter(Room.id == data['room_id']).first()
+
+    if not room:
+        raise NotFound
+
+    if not int(room.master_id) == int(data['user_id']):  # 방의 마스터가 아님
+        raise Forbidden
+
+    attendance_checks = db.query(AttendanceCheck).filter(AttendanceCheck.room_id == data['room_id'],
+                                                         AttendanceCheck.is_valid.is_(True), ).all()  # 아직 유요한 출첵을 가져옴
+
+    if not attendance_checks:
+        raise NotFound
+
+    for attendance_check in attendance_checks:  # 모두 유요하지 않게 수정
+        attendance_check.is_valid = False
+    db.commit()
+
+    return jsonify({})
