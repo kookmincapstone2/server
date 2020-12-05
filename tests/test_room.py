@@ -1,3 +1,4 @@
+import datetime
 import json
 
 
@@ -151,7 +152,8 @@ def test_get_room_member_all(client, user):  # 방에 가입된 모든 멤버를
 
     res = client.get('/api/room/member/all', query_string=data)
     assert res.status_code == 200
-    assert json.loads(res.data.decode())['User'][0]['user_id'] == user.id
+    assert len(json.loads(res.data.decode())) == 1
+    assert json.loads(res.data.decode())[str(user.id)]['rate_info']['rate'] == 0.0
 
 
 def test_post_delete_room_member_management(client, user, basic_user):
@@ -231,3 +233,44 @@ def test_attendance_rate(client, user, basic_user):  # 출석률 나오는지 �
     res = client.get('/api/room/member/attendance/rate', query_string=data)  # 출석률 확인
     assert res.status_code == 200
     assert json.loads(res.data.decode())[str(basic_user.id)]['rate'] == 1.0
+
+
+def test_get_room_attendance_all(client, user, basic_user):
+    data = {
+        'user_id': basic_user.id,
+        'room_id': user.room[0].id,
+        'invite_code': user.room[0].invite_code,
+        'pass_num': 123456,
+    }
+
+    res = client.post('/api/room/member/management', data=data)  # 방에 멤버 추가
+    assert res.status_code == 200
+
+    data['user_id'] = user.id
+    res = client.post('/api/room/attendance/check', data=data)  # 출석체크 생성
+    assert res.status_code == 200
+
+    data['user_id'] = basic_user.id
+    res = client.put('/api/room/attendance/check', data=data)  # 출석체크
+    assert res.status_code == 200
+
+    res = client.get('/api/room/attendance/check/all', query_string=data)  # 출석체크 현황 가져옴
+    assert res.status_code == 200
+    assert (str(datetime.datetime.now())[0:10]) in json.loads(res.data.decode()).keys()  # 출석 데이터 존재하는지 확인
+
+
+def test_put_room_attendance_check_close(client, user):
+    data = {
+        'user_id': user.id,
+        'room_id': user.room[0].id,
+        'pass_num': 123456,
+    }
+
+    res = client.post('/api/room/attendance/check', data=data)  # 출석체크 생성
+    assert res.status_code == 200
+
+    res = client.put('/api/room/attendance/check/close', data=data)  # 출석 유효성 제거
+    assert res.status_code == 200
+
+    res = client.put('/api/room/attendance/check', data=data)  # 출석체크 안되는거 확인
+    assert res.status_code == 404

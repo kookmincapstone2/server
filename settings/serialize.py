@@ -1,6 +1,6 @@
 from typequery import GenericMethod
 
-from api.models.room import Room, RoomMember
+from api.models.room import Room, RoomMember, AttendanceCheck
 from api.models.user import User
 
 serialize = GenericMethod('serialize')
@@ -56,6 +56,16 @@ def serialize(room, **kwargs):
 def serialize(room_member, **kwargs):
     result = {
         'room_id': serialize(room_member.room_id)
+    }
+
+    return result
+
+
+@serialize.of(AttendanceCheck)
+def serialize(attendance_check, **kwargs):
+    result = {
+        'attendance_check_id': attendance_check.id,
+        'attendance_check_is_checked': attendance_check.is_checked
     }
 
     return result
