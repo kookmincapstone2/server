@@ -393,16 +393,18 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 응답  
 ```
 {
-    1:  {
-            "user_id": 1,
-            "name": "tester",
-            "rank": "student"
-            "rate_info": {
-                "checke": 1,
-                "unchecked": 0,
-                "rate": 1.0,
-        }, ...
-    ]
+    "User": {   1:  {
+                    "user_id": 1,
+                    "name": "tester",
+                    "rank": "student"
+                    "rate_info": {
+                        "checke": 1,
+                        "unchecked": 0,
+                        "rate": 1.0,
+                    }
+                }, ...
+        }
+    }
 }
 
 200 ok
@@ -449,10 +451,11 @@ get, post, put, delete: 삽입한 데이터 확인하고 싶을 때 사용
 응답
 ```
 {
-    "2020-12-06": {
+    "Date": {2020-12-06": {
         'attendance_check_id': 1,
         'attendance_check_is_checked': True
     }, ...
+    }
 }
 
 200 ok

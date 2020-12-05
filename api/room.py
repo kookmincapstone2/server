@@ -328,7 +328,7 @@ def get_room_member_all(data, db):  # 해당 방의 정보를 가져옴
         suser['rate_info'] = temp
         result[str(user.id)] = suser
 
-    return jsonify(result)
+    return jsonify({'User': result})
 
 
 @app.route('/room/member/attendance/rate', methods=['GET'])
@@ -389,7 +389,7 @@ def get_room_attendance_all(data, db):  # 학생 한명의 출석 현황을 보�
     for attendance_check in attendance_checks:
         result[str(attendance_check.created_on)[0:10]] = serialize(attendance_check)
 
-    return jsonify(result)
+    return jsonify({'Date': result})
 
 
 @app.route('/room/attendance/check/close', methods=['PUT'])
